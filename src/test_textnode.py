@@ -19,11 +19,13 @@ class TestTextNode(unittest.TestCase):
         node2 = TextNode("this is not same line",TextType.IMAGE)
         self.assertNotEqual(node1, node2)
 
+    #testing texttype
     def test_type_not_eq(self):
         node1 = TextNode("this is equal",TextType.LINK,"example.com")
         node2 = TextNode("this is equal",TextType.PLAIN,"example.com")
         self.assertNotEqual(node1, node2)
 
+    #testing the textnode to htmlnode conversion
     def test_text(self):
         node = TextNode("This is a text node", TextType.TEXT)
         html_node = text_node_to_html_node(node)
