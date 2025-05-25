@@ -8,6 +8,7 @@ class TextType(Enum):
     TEXT = "text"
     BOLD = "bold"
     ITALIC = "italic"
+    CODE = "code"
 
 class TextNode:
     def __init__(self, text, text_type, url = None):

@@ -1,6 +1,6 @@
 import re
 from textnode import TextNode , TextType
-
+print()
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
     for old_node in old_nodes:
@@ -12,6 +12,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         sections = text.split(delimiter)
         if len(sections)%2 == 0:
             raise Exception("Invalid number of delimiter")
+        
         for i in range(len(sections)):
             if sections[i] == "":
                 continue
@@ -34,46 +35,40 @@ def extract_markdown_links(text):
 
 def split_nodes_image(old_nodes):
     new_nodes = []
-    #loop through all the nodes
+
     for old_node in old_nodes:
         if not isinstance(old_node, TextNode):
-            raise Exception("Invalid type")
-        
-        text = old_node.text
-        #rejecting non text nodes
+            raise Exception("invalid type")
+
         if old_node.text_type != TextType.TEXT:
             new_nodes.append(old_node)
-            continue 
+            continue
 
-        #extracting the image url and alt text
-        text_urls = extract_markdown_images(text)
+        text = old_node.text
+        matches = extract_markdown_images(text)
+        if not matches:
+            new_nodes.append(old_node)
+            continue
 
-        #loop through the tuples of alt text and image url
-        for alt_text, image_url in text_urls:
-
-            #exit if there are no text
-            if not text_urls:
-                break
-
-            #if the alt text or image url is empty, append the old node
-            if not alt_text or not image_url:
-                new_nodes.append(old_node)
+        for alt_text, image_url in matches:
+            split_text = text.split(f"![{alt_text}]({image_url})", 1)
+            
+            if len(split_text) != 2:
                 continue
 
-            #splitting the text into sections
-            sections = text.split(f"![{alt_text}]({image_url})",1)
+            if not split_text[0]:
+                new_nodes.append(TextNode(alt_text, TextType.IMAGE, image_url))
+                text = split_text[1]
 
-            #case if image is at the start
-            if sections[0] == "":
-                new_nodes.append(TextNode(alt_text, TextType.IMAGE, image_url))
-                text = sections[1]
-            
-            #case if text is at the start
             else:
-                new_nodes.append(TextNode(sections[0], TextType.TEXT))
+                new_nodes.append(TextNode(split_text[0], TextType.TEXT))
                 new_nodes.append(TextNode(alt_text, TextType.IMAGE, image_url))
-                text = sections[1]
+                text = split_text[1]
+        if text:
+            new_nodes.append(TextNode(text, TextType.TEXT))
+            
     return new_nodes
+
 
 def split_nodes_link(old_nodes):
     new_nodes = []
@@ -82,40 +77,53 @@ def split_nodes_link(old_nodes):
     for old_node in old_nodes:
         if not isinstance(old_node, TextNode):
             raise Exception("Invalid type")
-        text = old_node.text
 
         #rejecting non text nodes
         if old_node.text_type != TextType.TEXT:
             new_nodes.append(old_node)
             continue 
 
-        #extracting the image url and alt text
-        text_urls = extract_markdown_links(text)
+        text = old_node.text
+        matches = extract_markdown_links(text)
 
-        #loop through the tuples of alt text and image url
-        for anker_text, url in text_urls:
-
-            #exit if there are no text
-            if not text_urls:
-                break
-
-            #if the alt text or image url is empty, append the old node
-            if not anker_text or not url:
+        for alt_text, url in matches:
+            if not matches:
                 new_nodes.append(old_node)
+                break
+            
+            split_text = text.split(f"[{alt_text}]({url})",1)
+
+            if len(split_text) != 2:
                 continue
 
-            #splitting the text into sections
-            sections = text.split(f"[{anker_text}]({url})",1)
-
-            #case if image is at the start
-            if sections[0] == "":
-                new_nodes.append(TextNode(anker_text, TextType.LINK, url))
-                text = sections[1]
-            
             #case if text is at the start
+            if not split_text[0]:
+                new_nodes.append(TextNode(alt_text, TextType.LINK, url))
+                text = split_text[1]
+            
+            #case if image is at the start
             else:
-                new_nodes.append(TextNode(sections[0], TextType.TEXT))
-                new_nodes.append(TextNode(anker_text, TextType.LINK, url))
-                text = sections[1]
+                new_nodes.append(TextNode(split_text[0], TextType.TEXT))
+                new_nodes.append(TextNode(alt_text, TextType.LINK, url))
+                text = split_text[1]
+        if text:
+            new_nodes.append(TextNode(text, TextType.TEXT))
+        
     return new_nodes
+
+def text_to_textnodes(text):
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    return nodes
+
+def markdown_to_blocks(markdown):
+    print(markdown)
+    split_markdowns = markdown.split("\n\n")
+    striped_markdowns = [split_markdown.strip() for split_markdown in split_markdowns if split_markdown.strip()]
+    cleaned = [re.sub(r"\n[ \t]+", "\n", striped_markdown) for striped_markdown in striped_markdowns]
+    return cleaned
 
