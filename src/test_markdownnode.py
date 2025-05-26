@@ -196,6 +196,35 @@ class dummy(unittest.TestCase):
             ],
         )
 
+    def test_block_to_heading_type(self):
+        block = "### this is a heading block"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.HEADING)
+
+    def test_block_to_code_type(self):
+        block = "```print('hello')```"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.CODE)
+
+    def test_block_to_paragraph_type(self):
+        block = "this is paragraph"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.PARAGRAPH)
+
+    def test_block_to_quote_type(self):
+        block = "> this is a quote"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.QUOTE)
+
+    def test_block_to_unordered_list_type(self):
+        block = "- this is an unordered list"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.UNORDERED)
+
+    def test_block_to_ordered_list_type(self):
+        block = "1. this is an ordered list\n 3. with items"
+        block_type = block_to_block_type(block)
+        self.assertEqual(block_type, BlockType.ORDERED)
 
 if __name__ == "__main__":
     unittest.main()
