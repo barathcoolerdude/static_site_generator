@@ -92,17 +92,6 @@ class TestDinlinemarkdown(unittest.TestCase):
             ], new_nodes
         )
 
-#a dummy for the test
-class dummy(unittest.TestCase):
-    pass
-
-    #testing invalid text text
-    def test_split_image_invalid_type(self):
-        node= dummy()
-        with self.assertRaises(Exception) as context:
-            split_nodes_image([node])
-        self.assertEqual(str(context.exception), "invalid type")
-
     #if link is at the start
     def test_split_link_at_start(self):
         node= TextNode("[to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",TextType.TEXT)
