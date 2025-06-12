@@ -1,6 +1,9 @@
 import re
-from textnode import TextNode , TextType
+from textnode import TextNode , TextType, text_node_to_html_node
 import enum
+from htmlnode import HTMLNode , ParentNode, LeafNode
+
+
 
 class BlockType(enum.Enum):
     PARAGRAPH = "paragraph"
@@ -130,18 +133,17 @@ def text_to_textnodes(text):
     return nodes
 
 def markdown_to_blocks(markdown):
-    print(markdown)
     split_markdowns = markdown.split("\n\n")
     striped_markdowns = [split_markdown.strip() for split_markdown in split_markdowns if split_markdown.strip()]
-    cleaned = [re.sub(r"\n[ \t]+", "\n", striped_markdown) for striped_markdown in striped_markdowns]
-    return cleaned
+    cleaned_markdown = [re.sub(r"\n[ \t]+", "\n", striped_markdown) for striped_markdown in striped_markdowns]
+    return cleaned_markdown
 
 def block_to_block_type(markdown):
     if re.match(r"^(#{1,6})\s", markdown):
         return  BlockType.HEADING
-    elif re.match(r"^```[\s\S]*```$", markdown):
+    elif re.match(r"^```[\s\S]*?```$", markdown):
         return BlockType.CODE
-    elif re.match(r"^(>.*\n?)*$", markdown):
+    elif re.match(r"^\s*>", markdown):
         return BlockType.QUOTE
     elif re.match(r"^(?:- .*\n?)*$", markdown):
         return BlockType.UNORDERED
@@ -150,5 +152,90 @@ def block_to_block_type(markdown):
     else:
         return BlockType.PARAGRAPH
 
+def get_tag_from_block_type(block_type, markdown):
+    if block_type == BlockType.HEADING:
+        matches = re.match(r"^(#{1,6})*", markdown)
+        if matches:
+            level = len(matches.group(1))
+        else:
+            None
+        return "h", level
+    elif block_type == BlockType.CODE:
+        return "code", None
+    elif block_type == BlockType.QUOTE:
+        return "blockquote", None
+    elif block_type == BlockType.UNORDERED:
+        return "ul", None
+    elif block_type == BlockType.ORDERED:
+        return "ol", None
+    else:
+        return "p", None  # default for paragraphs
 
+def text_to_children(text):
+    if not text:
+        return []
+    htmlnodes = []
+    textnodes = text_to_textnodes(text)
+    for textnode in textnodes:
+        htmlnodes.append(text_node_to_html_node(textnode))
+    return htmlnodes
 
+def markdown_to_html_node(markdown):
+    parent = ParentNode("div", [])
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        block = block.strip()
+        block_type = block_to_block_type(block)
+        tag, matches = get_tag_from_block_type(block_type, block)
+
+        if tag == "p":
+            node = ParentNode(tag,text_to_children(block))
+            parent.children.append(node)
+
+        elif tag == "h":
+            cleaned_heading = block.lstrip("#").strip()
+            node = ParentNode(f"{tag}{matches}", text_to_children(cleaned_heading))
+            parent.children.append(node)
+
+        elif tag == "code":
+            cleaned_block = block.strip().strip("`")
+            text_node = TextNode(cleaned_block, TextType.CODE)
+            children_node = text_node_to_html_node(text_node)
+            node = ParentNode("pre", children = [children_node])
+            parent.children.append(node)
+    
+        elif tag == "blockquote":
+            print(f"it reached the blockquote: {block}")
+            cleaned_block = block.lstrip(">").strip()
+            print(f"cleaned block: {cleaned_block}")
+            node = ParentNode(tag, text_to_children(cleaned_block))
+            print(f"node: {node}")
+            parent.children.append(node)
+
+        elif tag == "ul":
+            item_list = block.split("\n")
+            cleaned_item = list(map(lambda x: x.lstrip("-"), item_list))
+            children_node = [
+                ParentNode("li", text_to_children(item))
+                for item in cleaned_item
+            ]
+            parent.children.append(ParentNode(tag, children_node))
+    
+        elif tag == "ol":
+            item_list = block.split("\n")
+            cleaned_item = list(map(lambda x: x.lstrip(r"^\d+\.\s*"), item_list))
+            children_node = [
+                ParentNode("li", text_to_children(item))
+                for item in cleaned_item
+            ]
+            parent.children.append(ParentNode(tag, children_node))
+
+        else:
+            raise ValueError(f"Unknown block type: {block_type}")
+        
+    return parent
+
+    
+        
+        
+    

@@ -25,12 +25,12 @@ class TextNode:
             self.url == other.url
         )
     def __repr__(self):
-        return f"TextNode(text={self.text}, text_type={self.text_type}, url={self.url})"
+        return f"TextNode(text={repr(self.text)}, text_type={self.text_type}, url={self.url})"
 
 
 def text_node_to_html_node(text_node):
     if text_node.text_type == TextType.TEXT:
-        return LeafNode(None, text_node.text)
+        return LeafNode(None, text_node.text.replace("\n", " "))
     elif text_node.text_type == TextType.BOLD:
         return LeafNode("b", text_node.text)
     elif text_node.text_type == TextType.ITALIC:
@@ -39,10 +39,9 @@ def text_node_to_html_node(text_node):
         return LeafNode("a", text_node.text, {"href": text_node.url})
     elif text_node.text_type == TextType.IMAGE:
         return LeafNode("img", None, {text_node.url: "alt"})
+    elif text_node.text_type == TextType.CODE:
+        return LeafNode("code", text_node.text)
     else:
         raise Exception("Invalid text type")
      
-    
-    
-    
-
+ 
