@@ -1,38 +1,35 @@
 from textnode import TextNode, TextType
+import shutil
+import os
+from markdownnode import *
+from transfer_file import transfer_files
+from generate_page_recursive import generate_page_recursive
 
 def main():
-    example1 = TextNode("example", TextType.PLAIN, None)
+    example1 = TextNode("example", TextType.PLAIN, None) #test line
     print(example1)
+
+    public_dir = "./public"
+    index_html_file = "./public/index.html"
+    from_path = "./content/index.md"
+    template_path = "./template.html"
+    dest_path = "./public/index.html"
+
+    # create empty public directory
+    if os.path.exists(public_dir):
+        shutil.rmtree(public_dir)
+    os.makedirs(public_dir, exist_ok=True)
+
+    # transfer files from static t public directory
     transfer_files()
-
-def transfer_files():
-    import shutil
-    import os
-
-    src = "/home/coolerdude/workspace/static_site_generator/static"
-    dis = "/home/coolerdude/workspace/static_site_generator/public"
-
-    if os.path.exists(dis):
-        shutil.rmtree(dis)
-    os.makedirs(dis)
-
-    print(os.path.exists(dis))
-    def copy_content(src, dis):
-        for item in os.listdir(src):
-            s_item = os.path.join(src, item)
-            d_item = os.path.join(dis, item)
-
-            if os.path.isdir(s_item):
-                os.makedirs(d_item, exist_ok=True)
-                print(f"copying directory {s_item} to {d_item}")
-                copy_content(s_item, d_item)
-
-            else:
-                shutil.copy2(s_item, d_item)
-                print(f"\ncopied content from {s_item} to {d_item}")
-    copy_content(src, dis)
     
-    
+    #generate index.html file
+    if os.path.isfile(index_html_file):
+        os.remove(index_html_file)
+    generate_page_recursive(from_path, template_path, dest_path)
+
+
+
 
 
 if __name__ == "__main__":

@@ -49,35 +49,25 @@ def split_nodes_image(old_nodes):
     new_nodes = []
 
     for old_node in old_nodes:
-        if not isinstance(old_node, TextNode):
-            raise Exception("invalid type")
-
         if old_node.text_type != TextType.TEXT:
             new_nodes.append(old_node)
             continue
 
-        text = old_node.text
-        matches = extract_markdown_images(text)
-        if not matches:
+        original_text = old_node.text
+        images = extract_markdown_images(original_text)
+        if len(images) == 0:
             new_nodes.append(old_node)
             continue
-
-        for alt_text, image_url in matches:
-            split_text = text.split(f"![{alt_text}]({image_url})", 1)
-            
-            if len(split_text) != 2:
-                continue
-
-            if not split_text[0]:
-                new_nodes.append(TextNode(alt_text, TextType.IMAGE, image_url))
-                text = split_text[1]
-
-            else:
-                new_nodes.append(TextNode(split_text[0], TextType.TEXT))
-                new_nodes.append(TextNode(alt_text, TextType.IMAGE, image_url))
-                text = split_text[1]
-        if text:
-            new_nodes.append(TextNode(text, TextType.TEXT))
+        for image in images:
+            sections = original_text.split(f"![{image[0]}]({image[1]})", 1)
+            if len(sections) != 2:
+                raise ValueError("Invalid markdown, image section not closed")
+            if sections[0] != "":
+                new_nodes.append(TextNode(sections[0], TextType.TEXT))
+            new_nodes.append(TextNode(image[0], TextType.IMAGE, image[1]))
+            original_text = sections[1]
+        if original_text != "":
+            new_nodes.append(TextNode(original_text, TextType.TEXT))
             
     return new_nodes
 
@@ -205,16 +195,13 @@ def markdown_to_html_node(markdown):
             parent.children.append(node)
     
         elif tag == "blockquote":
-            print(f"it reached the blockquote: {block}")
             cleaned_block = block.lstrip(">").strip()
-            print(f"cleaned block: {cleaned_block}")
             node = ParentNode(tag, text_to_children(cleaned_block))
-            print(f"node: {node}")
             parent.children.append(node)
 
         elif tag == "ul":
             item_list = block.split("\n")
-            cleaned_item = list(map(lambda x: x.lstrip("-"), item_list))
+            cleaned_item = list(map(lambda x: x.lstrip("-").strip(), item_list))
             children_node = [
                 ParentNode("li", text_to_children(item))
                 for item in cleaned_item
@@ -223,7 +210,7 @@ def markdown_to_html_node(markdown):
     
         elif tag == "ol":
             item_list = block.split("\n")
-            cleaned_item = list(map(lambda x: x.lstrip(r"^\d+\.\s*"), item_list))
+            cleaned_item = [re.sub(r"^\d+\.\s*", "", item) for item in item_list]
             children_node = [
                 ParentNode("li", text_to_children(item))
                 for item in cleaned_item
@@ -235,7 +222,15 @@ def markdown_to_html_node(markdown):
         
     return parent
 
-    
+def extract_title(markdown):
+    lines = markdown.split("\n")
+    for line in lines:
+        line = line.strip()
+        if re.match(r'^#(?!#)\s*\S', line):
+            return line.lstrip("#").strip()
+    raise Exception("No title found in the markdown")
+
+
         
         
     

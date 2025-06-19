@@ -320,6 +320,19 @@ class TestDinlinemarkdown(unittest.TestCase):
             html,
             "<div><ol><li>1. This is an ordered list</li><li>2. with items</li></ol></div>",
         )
+    
+    def test_extract_title(self):
+        md = """
+        ## this is a title
+
+        # this is another title
+        
+        this is a paragraph
+        """
+        heading = extract_title(md)
+        print(f"md {md}")
+        self.assertEqual(heading, "this is another title" 
+        )
 
 if __name__ == "__main__":
     unittest.main()
