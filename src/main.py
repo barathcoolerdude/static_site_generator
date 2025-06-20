@@ -11,7 +11,7 @@ def main():
     print(example1)
 
     if len(sys.argv) > 1:
-        basepath = sys.argv(1)
+        basepath = sys.argv[1]
         print(f"basepath: {basepath}")
     else:
         basepath = "/"
@@ -21,7 +21,7 @@ def main():
     index_html_file = "./public/index.html"
     source_path = "./content"
     template_path = "./template.html"
-    dest_path = "./public"
+    dest_path = "./docs"
 
     # create empty public directory
     if os.path.exists(public_dir):
