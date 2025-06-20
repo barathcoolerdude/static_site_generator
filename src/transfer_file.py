@@ -6,7 +6,7 @@ import shutil
 def transfer_files():
     print(f"process entered transfer_files")
     src = "./static"
-    dis = "./public"
+    dis = "./docs"
 
     if os.path.exists(dis):
         shutil.rmtree(dis)
