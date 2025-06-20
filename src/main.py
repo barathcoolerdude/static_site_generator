@@ -17,7 +17,6 @@ def main():
         basepath = "/"
         print(f"basepath: {basepath}")
 
-    index_html_file = "./public/index.html"
     source_path = "./content"
     template_path = "./template.html"
     dest_path = "./docs"
