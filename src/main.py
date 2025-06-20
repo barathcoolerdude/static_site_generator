@@ -17,23 +17,14 @@ def main():
         basepath = "/"
         print(f"basepath: {basepath}")
 
-    public_dir = "./public"
     index_html_file = "./public/index.html"
     source_path = "./content"
     template_path = "./template.html"
     dest_path = "./docs"
 
-    # create empty public directory
-    if os.path.exists(public_dir):
-        shutil.rmtree(public_dir)
-    os.makedirs(public_dir, exist_ok=True)
-
     # transfer files from static t public directory
     transfer_files()
     
-    #generate index.html file
-    if os.path.isfile(index_html_file):
-        os.remove(index_html_file)
     generate_page_recursive(source_path, template_path, dest_path, basepath)
 
 
