@@ -1,0 +1,15 @@
+[33m3e423ae[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m img source corrected
+[33ma82cffe[m reset base url
+[33mb1b85a9[m github pages mod
+[33m65e14d2[m tunned for gitpages
+[33m5129b6d[m generate_multiple_pages
+[33ma143276[m generate_page
+[33ma789da8[m launch website
+[33m156ac16[m content loader
+[33m24cc1fc[m markdown to htmlnode
+[33m69e0f69[m dummy class removed
+[33m7f1e96c[m block to blocktype
+[33m81d21df[m markdown to blocks
+[33m7ece75d[m split image and links
+[33m445887c[m markdownnode to textnode
+[33mb158f49[m textnode to htmlnode
