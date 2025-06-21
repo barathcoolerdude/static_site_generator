@@ -4,7 +4,6 @@ import shutil
 
 #tranfers file from static to public directory
 def transfer_files():
-    print(f"process entered transfer_files")
     src = "./static"
     dis = "./docs"
 
