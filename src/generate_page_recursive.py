@@ -34,7 +34,6 @@ def generate_page(from_path, template_path, dest_file, basepath):
     content = markdown_to_html_node(source_content)
     html = content.to_html()
     htmloutput = template_content.replace("{{ Content }}", html).replace("{{ Title }}", title)
-    basepath = "helloworld"
     htmloutput = htmloutput.replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
 
     with open(dest_file, "w") as file:
