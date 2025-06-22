@@ -10,7 +10,7 @@ def main():
 
     if len(sys.argv) > 1:
         print(f"sys.argv: {sys.argv}")
-        basepath = sys.argv[0]
+        basepath = sys.argv[1]
     else:
         basepath = "/"
 
