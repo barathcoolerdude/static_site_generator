@@ -1,6 +1,4 @@
 from textnode import TextNode, TextType
-import shutil
-import os
 from markdownnode import *
 from transfer_file import transfer_files
 from generate_page_recursive import generate_page_recursive
@@ -28,6 +26,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
