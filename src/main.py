@@ -12,7 +12,7 @@ def main():
         print(f"sys.argc[1]: {sys.argv[1]}")
         basepath = sys.argv[1]
     else:
-        basepath = "/hello"
+        basepath = "/"
 
     source_path = "./content"
     template_path = "./template.html"
