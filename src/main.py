@@ -5,8 +5,6 @@ from generate_page_recursive import generate_page_recursive
 import sys
 
 def main():
-    example1 = TextNode("example", TextType.PLAIN, None) #test line
-    print(example1)
 
     if len(sys.argv) > 1:
         print(f"sys.argv: {sys.argv}")
