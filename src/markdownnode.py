@@ -4,7 +4,6 @@ import enum
 from htmlnode import HTMLNode , ParentNode, LeafNode
 
 
-
 class BlockType(enum.Enum):
     PARAGRAPH = "paragraph"
     HEADING = "heading"

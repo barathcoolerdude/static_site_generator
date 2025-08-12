@@ -16,7 +16,7 @@ def main():
     template_path = "./template.html"
     dest_path = "./docs"
 
-    # transfer files from static t public directory
+    # transfer files from static to public directory
     transfer_files()
     
     generate_page_recursive(source_path, template_path, dest_path, basepath)
