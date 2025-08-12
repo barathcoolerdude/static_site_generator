@@ -1,0 +1,27 @@
+.toolbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: linear-gradient(to right, #47d80d,#5a8d46, #055e3a);
+    color: white;
+}
+
+.website-name {
+    color: rgb(236, 236, 239);
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.toolbar-button button {
+    font-family: 'Cambria', Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 16px;
+    letter-spacing: 1.7px;
+    background-color: transparent;
+    border: transparent
+}
+
+.toolbar-button button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+}
